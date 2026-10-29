@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <PackageId>HetBeginstation.Common</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Het Beginstation</Authors>
+    <Company>Het Beginstation</Company>
+    <Description>Shared utilities for internal company projects. Primarily for OpenTelemetry config for various services.</Description>
+
+    <RepositoryUrl>https://github.com/YOUR-ORG/MyCompany.Common</RepositoryUrl>
+    <PackageTags>internal;utilities;common</PackageTags>
+  </PropertyGroup>
+
+</Project>
