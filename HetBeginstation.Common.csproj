@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
 
     <PackageId>HetBeginstation.Common</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <Authors>Het Beginstation</Authors>
     <Company>Het Beginstation</Company>
     <Description>Shared utilities for internal company projects. Primarily for OpenTelemetry config for various services.</Description>
