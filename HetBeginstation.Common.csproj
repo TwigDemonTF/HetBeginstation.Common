@@ -11,8 +11,12 @@
     <Company>Het Beginstation</Company>
     <Description>Shared utilities for internal company projects. Primarily for OpenTelemetry config for various services.</Description>
 
-    <RepositoryUrl>https://github.com/YOUR-ORG/MyCompany.Common</RepositoryUrl>
+    <RepositoryUrl>https://github.com/TwigDemonTF/HetBeginstation.Common</RepositoryUrl>
     <PackageTags>internal;utilities;common</PackageTags>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MyCompany.Common" Version="1.0.0" />
+  </ItemGroup>
 
 </Project>
