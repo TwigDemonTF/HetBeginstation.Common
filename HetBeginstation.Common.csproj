@@ -9,14 +9,28 @@
     <Version>1.0.1</Version>
     <Authors>Het Beginstation</Authors>
     <Company>Het Beginstation</Company>
-    <Description>Shared utilities for internal company projects. Primarily for OpenTelemetry config for various services.</Description>
+    <Description>OpenTelemetry auto-configuration for event-based microservices. Includes tracing, metrics, logging, RabbitMQ, and EF Core instrumentation.</Description>
 
     <RepositoryUrl>https://github.com/TwigDemonTF/HetBeginstation.Common</RepositoryUrl>
-    <PackageTags>internal;utilities;common</PackageTags>
+    <PackageTags>opentelemetry;otel;tracing;metrics;logging;rabbitmq;microservices;ef-core</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MyCompany.Common" Version="1.0.0" />
+    <None Include="README.md" Pack="true" PackagePath="/" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OpenTelemetry" Version="1.20.1" />
+    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.20.1" />
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.20.1" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.20.1" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.GrpcNetClient" Version="1.18.0-beta.1" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.20.1" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.EntityFrameworkCore" Version="1.20.1-beta.1" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.20.1" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Process" Version="1.20.1-rc.1" />
+    <PackageReference Include="RabbitMQ.Client" Version="7.1.1" />
   </ItemGroup>
 
 </Project>
