@@ -86,6 +86,53 @@ The `.nupkg` will be placed in `artifacts/`. Publish it to your internal NuGet f
 dotnet add package SharedOpenTelemetry --version 1.0.0
 ```
 
+## Development
+
+### Prerequisites
+
+- .NET 8 SDK
+- Visual Studio or VS Code with C# extensions
+
+### Building
+
+To build the package:
+
+```bash
+dotnet build src/SharedOpenTelemetry/SharedOpenTelemetry.csproj
+```
+
+To create a NuGet package:
+
+```bash
+dotnet pack src/SharedOpenTelemetry/SharedOpenTelemetry.csproj -c Release -o ./artifacts
+```
+
+### Testing
+
+Unit tests are located in the test project. Run tests with:
+
+```bash
+dotnet test
+```
+
+### Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Ensure all tests pass
+5. Submit a pull request
+
+### Dependencies
+
+The package depends on the following OpenTelemetry libraries:
+- OpenTelemetry.Extensions.Hosting
+- OpenTelemetry.Exporter.OpenTelemetryProtocol
+- OpenTelemetry.Instrumentation.AspNetCore
+- OpenTelemetry.Instrumentation.Http
+- OpenTelemetry.Instrumentation.Runtime
+- RabbitMQ.Client.OpenTelemetry
+
 ## Important notes
 
 - This package configures telemetry collection and export; you still need a backend/collector to store and query it.

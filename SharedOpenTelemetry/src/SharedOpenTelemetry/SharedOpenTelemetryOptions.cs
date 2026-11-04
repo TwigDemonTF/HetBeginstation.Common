@@ -1,25 +1,31 @@
 namespace SharedOpenTelemetry;
 
 /// <summary>
-/// Small set of shared defaults. Exporter endpoints can also be configured with
-/// the standard OTEL_* environment variables.
+/// Configuration options for the SharedOpenTelemetry package.
+/// These options control the behavior of OpenTelemetry instrumentation and export.
 /// </summary>
 public sealed class SharedOpenTelemetryOptions
 {
-    /// <summary>The service.name resource attribute.</summary>
+    /// <summary>
+    /// Gets or sets the service name that will be used as the service.name resource attribute.
+    /// This should be unique per microservice.
+    /// </summary>
     public string? ServiceName { get; set; }
 
-    /// <summary>The service.version resource attribute, if known.</summary>
+    /// <summary>
+    /// Gets or sets the service version that will be used as the service.version resource attribute.
+    /// </summary>
     public string? ServiceVersion { get; set; }
 
     /// <summary>
-    /// Adds the OTLP exporter to traces, metrics, and logs.
+    /// Gets or sets a value indicating whether the OTLP exporter is enabled.
     /// Set to false for local development without a collector.
     /// </summary>
     public bool EnableOtlpExporter { get; set; } = true;
 
     /// <summary>
-    /// Additional ActivitySource names to include for custom spans.
+    /// Gets or sets additional ActivitySource names to include for custom spans.
+    /// This allows adding custom instrumentation beyond the default ASP.NET Core and HTTP instrumentation.
     /// </summary>
     public string[] ActivitySourceNames { get; set; } = [];
 }
