@@ -1,17 +1,19 @@
 # SharedOpenTelemetry
 
-A small .NET 10 NuGet package that gives ASP.NET Core microservices the same OpenTelemetry defaults for logs, traces, and metrics.
+A small .NET 8 NuGet package that gives ASP.NET Core microservices the same OpenTelemetry defaults for logs, traces, and metrics.
 
 ## Table of Contents
 1. [Installation](#installation)
 2. [Usage](#usage)
 3. [Configuration](#configuration)
-4. [Development](#development)
-5. [Build & Deployment](#build--deployment)
-6. [Dependencies](#dependencies)
-7. [Important Notes](#important-notes)
+4. [Integration Details](#integration-details)
+5. [Development](#development)
+6. [Build & Deployment](#build--deployment)
+7. [Dependencies](#dependencies)
+8. [Important Notes](#important-notes)
 
 ## Included by default
+
 - Service resource metadata (`service.name` and optional `service.version`)
 - Incoming ASP.NET Core request traces and metrics
 - Outgoing `HttpClient` traces and metrics
@@ -21,15 +23,48 @@ A small .NET 10 NuGet package that gives ASP.NET Core microservices the same Ope
 
 The package does **not** automatically instrument RabbitMQ messages. Add message spans and propagate trace context in the RabbitMQ publisher/consumer code (or a suitable RabbitMQ instrumentation library) separately.
 
+## Integration Details
+
+### RabbitMQ Instrumentation
+
+While this package doesn't automatically instrument RabbitMQ messages, you can integrate with RabbitMQ by:
+1. Using the `RabbitMQ.Client.OpenTelemetry` library
+2. Adding trace context propagation to your RabbitMQ publisher/consumer code
+3. Manually creating spans for message processing
+
+### Jaeger Integration
+
+This package exports telemetry data via OTLP to Jaeger. To configure Jaeger as your OTLP endpoint:
+
+1. Set the OTLP endpoint to your Jaeger collector:
+```bash
+export OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger-collector:4317
+```
+
+2. Configure in appsettings.json:
+```json
+{
+  "OpenTelemetry": {
+    "EnableOtlpExporter": true,
+    "OtlpExporterEndpoint": "http://jaeger-collector:4317"
+  }
+}
+```
+
+3. Ensure your Jaeger collector is accessible and configured properly
+
 ## Installation
+
 This package is hosted on GitHub Packages. Install the package from your company's GitHub Packages feed, or reference the project while developing.
 
 ### For Linux, macOS, and Windows:
+
 ```bash
 dotnet add reference ../SharedOpenTelemetry/src/SharedOpenTelemetry/SharedOpenTelemetry.csproj
 ```
 
 ### Alternative: Install via GitHub Packages
+
 ```bash
 dotnet add package SharedOpenTelemetry --version 1.0.0
 ```
@@ -37,11 +72,13 @@ dotnet add package SharedOpenTelemetry --version 1.0.0
 To install from GitHub Packages, you'll need to configure your NuGet credentials:
 1. Create a personal access token with `read:packages` permission
 2. Add the GitHub Packages source to your NuGet configuration:
+
 ```bash
 dotnet nuget add source https://nuget.pkg.github.com/YOUR_ORGANIZATION/index.json --name github --username YOUR_USERNAME --password YOUR_TOKEN
 ```
 
 ## Usage
+
 To use the package in your ASP.NET Core service:
 
 1. **Add the package reference** (as described in the Installation section)
@@ -69,6 +106,7 @@ app.Run();
 The service name should be unique per microservice. If the service already uses an `ActivitySource` for custom spans, include that source's name in `ActivitySourceNames`.
 
 ## Configuration
+
 You can use `appsettings.json`:
 
 ```json
@@ -96,11 +134,14 @@ For local development without an OTLP Collector, disable exporting:
 When exporting is enabled, make sure an OTLP endpoint is available. For example, set `OTEL_EXPORTER_OTLP_ENDPOINT` to your collector endpoint. The endpoint and protocol must match your collector configuration.
 
 ## Development
+
 ### Prerequisites
-- .NET 10 SDK
+
+- .NET 8 SDK
 - Visual Studio or VS Code with C# extensions
 
 ### Building
+
 To build the package:
 
 ```bash
@@ -113,8 +154,26 @@ To create a NuGet package:
 dotnet pack src/SharedOpenTelemetry/SharedOpenTelemetry.csproj -c Release -o ./artifacts
 ```
 
+### Testing
+
+Unit tests are located in the test project. Run tests with:
+
+```bash
+dotnet test
+```
+
+### Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Ensure all tests pass
+5. Submit a pull request
+
 ## Build & Deployment
+
 ### Creating a NuGet Package
+
 From this directory:
 
 ```bash
@@ -128,6 +187,7 @@ dotnet add package SharedOpenTelemetry --version 1.0.0
 ```
 
 ## Dependencies
+
 The package depends on the following OpenTelemetry libraries:
 - OpenTelemetry.Extensions.Hosting
 - OpenTelemetry.Exporter.OpenTelemetryProtocol
@@ -137,6 +197,7 @@ The package depends on the following OpenTelemetry libraries:
 - RabbitMQ.Client.OpenTelemetry
 
 ## Important Notes
+
 - This package configures telemetry collection and export; you still need a backend/collector to store and query it.
 - Logs are collected through the normal `Microsoft.Extensions.Logging` pipeline. Continue using `ILogger<T>` in services.
 - Avoid logging passwords, tokens, personal data, or other secrets.
