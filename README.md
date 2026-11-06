@@ -29,6 +29,20 @@ While this package doesn't automatically instrument RabbitMQ messages, you can i
 2. Adding trace context propagation to your RabbitMQ publisher/consumer code
 3. Manually creating spans for message processing
 
+### Local Development Setup
+```bash
+docker run -d --name rabbitmq \
+  -p 5672:5672 \
+  -p 15672:15672 \
+  rabbitmq:3-management
+```
+This command starts RabbitMQ with:
+- AMQP protocol on port 5672
+- Management UI on port 15672
+
+Access the RabbitMQ management UI at http://localhost:15672
+Default credentials: guest/guest
+
 ### Jaeger Integration
 This package exports telemetry data via OTLP to Jaeger. To configure Jaeger as your OTLP endpoint:
 
