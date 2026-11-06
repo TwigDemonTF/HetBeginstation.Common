@@ -96,7 +96,7 @@ public static class ServiceCollectionExtensions
                 {
                     tracing.AddSource(sourceName);
                 }
-                
+
                 // Add the RabbitMQ and OpenTelemetryExporter sources
                 tracing.AddSource(RabbitMqTelemetry.ActivitySourceName);
                 tracing.AddOtlpExporter();
