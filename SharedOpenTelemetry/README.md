@@ -187,7 +187,7 @@ dotnet add package SharedOpenTelemetry --version 1.0.0
 ```
 
 ## Dependencies
-The package depends on the following OpenTelemetry libraries:
+The package depends on the following OpenTelemetry libraries (version 1.20.0):
 - OpenTelemetry.Extensions.Hosting
 - OpenTelemetry.Exporter.OpenTelemetryProtocol
 - OpenTelemetry.Instrumentation.AspNetCore

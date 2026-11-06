@@ -63,6 +63,23 @@ export OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger-collector:4317
 
 3. Ensure your Jaeger collector is accessible and configured properly
 
+### Local Development Setup
+For local development, you can quickly spin up Jaeger using Docker:
+```bash
+docker run -d --name jaeger \
+  -e COLLECTOR_ZIPKIN_HOST_PORT=:9411 \
+  -p 16686:16686 \
+  -p 4317:4317 \
+  jaegertracing/all-in-one:latest
+```
+
+This command starts Jaeger with:
+- Web UI on port 16686
+- OTLP gRPC receiver on port 4317
+- Zipkin compatible receiver on port 9411
+
+Access the Jaeger UI at http://localhost:16686
+
 ## Installation
 This package is hosted on GitHub Packages. Install the package from your company's GitHub Packages feed, or reference the project while developing.
 
@@ -170,7 +187,7 @@ dotnet add package SharedOpenTelemetry --version 1.0.0
 ```
 
 ## Dependencies
-The package depends on the following OpenTelemetry libraries:
+The package depends on the following OpenTelemetry libraries (version 1.20.0):
 - OpenTelemetry.Extensions.Hosting
 - OpenTelemetry.Exporter.OpenTelemetryProtocol
 - OpenTelemetry.Instrumentation.AspNetCore
@@ -179,7 +196,7 @@ The package depends on the following OpenTelemetry libraries:
 - RabbitMQ.Client.OpenTelemetry
 
 ## Important Notes
-- This package configures telemetry collection and export; you still need a backend/collector to store and query it.
+- This package configures telemetry collection and export; you still need a backend/collector to store and query it (Jaeger).
 - Logs are collected through the normal `Microsoft.Extensions.Logging` pipeline. Continue using `ILogger<T>` in services.
 - Avoid logging passwords, tokens, personal data, or other secrets.
 - The package is intentionally small. Add database, messaging, and domain-specific instrumentation only when the services need it.
