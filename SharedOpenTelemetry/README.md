@@ -1,6 +1,6 @@
 # SharedOpenTelemetry
 
-A small .NET 10 NuGet package that gives ASP.NET Core microservices the same OpenTelemetry defaults for logs, traces, and metrics.
+A small .NET 8 NuGet package that gives ASP.NET Core microservices the same OpenTelemetry defaults for logs, traces, and metrics.
 
 ## Table of Contents
 1. [Installation](#installation)
@@ -29,7 +29,7 @@ While this package doesn't automatically instrument RabbitMQ messages, you can i
 2. Adding trace context propagation to your RabbitMQ publisher/consumer code
 3. Manually creating spans for message processing
 
-### Local Development Setup
+For local development, you can quickly spin up a RabbitMQ instance using Docker:
 ```bash
 docker run -d --name rabbitmq \
   -p 5672:5672 \
@@ -90,7 +90,7 @@ dotnet add reference ../SharedOpenTelemetry/src/SharedOpenTelemetry/SharedOpenTe
 
 ### Alternative: Install via GitHub Packages
 ```bash
-dotnet add package SharedOpenTelemetry --version 1.0.0
+dotnet add package SharedOpenTelemetry --version 1.0.1
 ```
 
 To install from GitHub Packages, you'll need to configure your NuGet credentials:
@@ -153,7 +153,7 @@ When exporting is enabled, make sure an OTLP endpoint is available. For example,
 
 ## Development
 ### Prerequisites
-- .NET 10 SDK
+- .NET 8 SDK
 - Visual Studio or VS Code with C# extensions
 
 ### Building
@@ -165,14 +165,6 @@ dotnet build src/SharedOpenTelemetry/SharedOpenTelemetry.csproj
 To create a NuGet package:
 ```bash
 dotnet pack src/SharedOpenTelemetry/SharedOpenTelemetry.csproj -c Release -o ./artifacts
-```
-
-### Contributing
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Ensure all tests pass
-5. Submit a pull request
 
 ## Build & Deployment
 ### Creating a NuGet Package
@@ -183,17 +175,18 @@ dotnet pack src/SharedOpenTelemetry/SharedOpenTelemetry.csproj -c Release -o ./a
 
 The `.nupkg` will be placed in `artifacts/`. Publish it to your internal NuGet feed, then install it in each service with:
 ```bash
-dotnet add package SharedOpenTelemetry --version 1.0.0
+dotnet add package SharedOpenTelemetry --version 1.0.1
 ```
 
 ## Dependencies
-The package depends on the following OpenTelemetry libraries:
-- OpenTelemetry.Extensions.Hosting
-- OpenTelemetry.Exporter.OpenTelemetryProtocol
-- OpenTelemetry.Instrumentation.AspNetCore
-- OpenTelemetry.Instrumentation.Http
-- OpenTelemetry.Instrumentation.Runtime
-- RabbitMQ.Client.OpenTelemetry
+
+The package depends on the following OpenTelemetry libraries (updated to resolve security vulnerabilities):
+- OpenTelemetry.Extensions.Hosting (version 1.20.0)
+- OpenTelemetry.Exporter.OpenTelemetryProtocol (version 1.20.0)
+- OpenTelemetry.Instrumentation.AspNetCore (version 1.20.0)
+- OpenTelemetry.Instrumentation.Http (version 1.20.0)
+- OpenTelemetry.Instrumentation.Runtime (version 1.20.0)
+- RabbitMQ.Client.OpenTelemetry (version 1.0.0-rc.2)
 
 ## Important Notes
 - This package configures telemetry collection and export; you still need a backend/collector to store and query it.
