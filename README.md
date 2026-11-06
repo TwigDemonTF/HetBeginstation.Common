@@ -1,21 +1,17 @@
-# HetBeginstation.Common
+# SharedOpenTelemetry
 
-This repository contains the HetBeginstation.Common project, which provides shared OpenTelemetry functionality for .NET microservices.
+A small .NET 10 NuGet package that gives ASP.NET Core microservices the same OpenTelemetry defaults for logs, traces, and metrics.
 
-## Repository Structure
+## Table of Contents
+1. [Installation](#installation)
+2. [Usage](#usage)
+3. [Configuration](#configuration)
+4. [Development](#development)
+5. [Build & Deployment](#build--deployment)
+6. [Dependencies](#dependencies)
+7. [Important Notes](#important-notes)
 
-The repository contains the following components:
-
-- **Consumer**: An ASP.NET Core service that consumes messages
-- **Publisher**: An ASP.NET Core service that publishes messages
-- **SharedOpenTelemetry**: A NuGet package that provides OpenTelemetry instrumentation for ASP.NET Core services
-
-## SharedOpenTelemetry Package
-
-The SharedOpenTelemetry package is the core component of this repository. It provides consistent OpenTelemetry configuration across all microservices in the HetBeginstation ecosystem.
-
-### Features
-
+## Included by default
 - Service resource metadata (`service.name` and optional `service.version`)
 - Incoming ASP.NET Core request traces and metrics
 - Outgoing `HttpClient` traces and metrics
@@ -23,23 +19,33 @@ The SharedOpenTelemetry package is the core component of this repository. It pro
 - Structured `ILogger` logs with scopes and formatted state
 - OTLP export for logs, traces, and metrics
 
-### Important Notes
+The package does **not** automatically instrument RabbitMQ messages. Add message spans and propagate trace context in the RabbitMQ publisher/consumer code (or a suitable RabbitMQ instrumentation library) separately.
 
-The package does **not** automatically instrument RabbitMQ messages. You'll need to add message spans and propagate trace context in the RabbitMQ publisher/consumer code (or use a suitable RabbitMQ instrumentation library) separately.
+## Installation
+This package is hosted on GitHub Packages. Install the package from your company's GitHub Packages feed, or reference the project while developing.
 
-## Using the Package
-
-### Installation
-
-Install the package from your internal NuGet feed, or reference the project while developing:
-
+### For Linux, macOS, and Windows:
 ```bash
 dotnet add reference ../SharedOpenTelemetry/src/SharedOpenTelemetry/SharedOpenTelemetry.csproj
 ```
 
-### Usage in a Service
+### Alternative: Install via GitHub Packages
+```bash
+dotnet add package SharedOpenTelemetry --version 1.0.0
+```
 
-In your `Program.cs`:
+To install from GitHub Packages, you'll need to configure your NuGet credentials:
+1. Create a personal access token with `read:packages` permission
+2. Add the GitHub Packages source to your NuGet configuration:
+```bash
+dotnet nuget add source https://nuget.pkg.github.com/YOUR_ORGANIZATION/index.json --name github --username YOUR_USERNAME --password YOUR_TOKEN
+```
+
+## Usage
+To use the package in your ASP.NET Core service:
+
+1. **Add the package reference** (as described in the Installation section)
+2. **Configure OpenTelemetry in Program.cs**:
 
 ```csharp
 using SharedOpenTelemetry;
@@ -60,8 +66,9 @@ app.MapControllers();
 app.Run();
 ```
 
-### Configuration
+The service name should be unique per microservice. If the service already uses an `ActivitySource` for custom spans, include that source's name in `ActivitySourceNames`.
 
+## Configuration
 You can use `appsettings.json`:
 
 ```json
@@ -74,9 +81,7 @@ You can use `appsettings.json`:
 }
 ```
 
-Configuration options fall back to environment variables:
-- `OpenTelemetry:ServiceName` falls back to `OTEL_SERVICE_NAME` environment variable, then the ASP.NET Core application name
-- Standard OpenTelemetry exporter environment variables are also supported, including `OTEL_EXPORTER_OTLP_ENDPOINT` and `OTEL_EXPORTER_OTLP_HEADERS`
+`OpenTelemetry:ServiceName` falls back to the `OTEL_SERVICE_NAME` environment variable, then the ASP.NET Core application name. The standard OpenTelemetry exporter environment variables are also supported by the OTLP exporter, including `OTEL_EXPORTER_OTLP_ENDPOINT` and `OTEL_EXPORTER_OTLP_HEADERS`.
 
 For local development without an OTLP Collector, disable exporting:
 
@@ -88,21 +93,31 @@ For local development without an OTLP Collector, disable exporting:
 }
 ```
 
-## Development Guidelines
+When exporting is enabled, make sure an OTLP endpoint is available. For example, set `OTEL_EXPORTER_OTLP_ENDPOINT` to your collector endpoint. The endpoint and protocol must match your collector configuration.
 
-### Setting up the Development Environment
+## Development
+### Prerequisites
+- .NET 10 SDK
+- Visual Studio or VS Code with C# extensions
 
-1. Ensure you have .NET 8 SDK installed
-2. Clone this repository
-3. Navigate to the repository directory
-4. Restore dependencies with: `dotnet restore`
-
-### Building the Package
-
-To build the NuGet package:
+### Building
+To build the package:
 
 ```bash
-cd SharedOpenTelemetry
+dotnet build src/SharedOpenTelemetry/SharedOpenTelemetry.csproj
+```
+
+To create a NuGet package:
+
+```bash
+dotnet pack src/SharedOpenTelemetry/SharedOpenTelemetry.csproj -c Release -o ./artifacts
+```
+
+## Build & Deployment
+### Creating a NuGet Package
+From this directory:
+
+```bash
 dotnet pack src/SharedOpenTelemetry/SharedOpenTelemetry.csproj -c Release -o ./artifacts
 ```
 
@@ -112,51 +127,17 @@ The `.nupkg` will be placed in `artifacts/`. Publish it to your internal NuGet f
 dotnet add package SharedOpenTelemetry --version 1.0.0
 ```
 
-### Contributing
+## Dependencies
+The package depends on the following OpenTelemetry libraries:
+- OpenTelemetry.Extensions.Hosting
+- OpenTelemetry.Exporter.OpenTelemetryProtocol
+- OpenTelemetry.Instrumentation.AspNetCore
+- OpenTelemetry.Instrumentation.Http
+- OpenTelemetry.Instrumentation.Runtime
+- RabbitMQ.Client.OpenTelemetry
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Ensure all tests pass
-5. Submit a pull request
-
-### Code Structure
-
-- **Consumer**: Implements a service that consumes messages
-- **Publisher**: Implements a service that publishes messages  
-- **SharedOpenTelemetry/src**: Contains the shared OpenTelemetry package source code
-
-### Testing
-
-Unit tests and integration tests should be written for all components. Ensure tests cover:
-- OpenTelemetry configuration
-- Service behavior
-- Message handling
-- Error scenarios
-
-### Deployment
-
-The package should be published to an internal NuGet feed for use across services. Each service should reference the latest stable version of the package.
-
-## Troubleshooting
-
-### Common Issues
-
-1. **OpenTelemetry not exporting**: Verify that `OTEL_EXPORTER_OTLP_ENDPOINT` is set correctly
-2. **Missing service name**: Ensure `OpenTelemetry:ServiceName` is configured properly
-3. **No trace context propagation**: Make sure RabbitMQ instrumentation is properly configured
-
-### Debugging
-
-Enable verbose logging to troubleshoot OpenTelemetry issues:
-- Set `OTEL_LOG_LEVEL=debug`
-- Check that your OTLP endpoint is accessible
-- Verify that the correct environment variables are set
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Support
-
-For support, please open an issue in the repository or contact the maintainers.
+## Important Notes
+- This package configures telemetry collection and export; you still need a backend/collector to store and query it.
+- Logs are collected through the normal `Microsoft.Extensions.Logging` pipeline. Continue using `ILogger<T>` in services.
+- Avoid logging passwords, tokens, personal data, or other secrets.
+- The package is intentionally small. Add database, messaging, and domain-specific instrumentation only when the services need it.

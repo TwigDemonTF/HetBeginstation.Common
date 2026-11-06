@@ -1,6 +1,6 @@
 # SharedOpenTelemetry
 
-A small .NET 8 NuGet package that gives ASP.NET Core microservices the same OpenTelemetry defaults for logs, traces, and metrics.
+A small .NET 10 NuGet package that gives ASP.NET Core microservices the same OpenTelemetry defaults for logs, traces, and metrics.
 
 ## Table of Contents
 1. [Installation](#installation)
