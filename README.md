@@ -62,6 +62,7 @@ export OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger-collector:4317
 ```
 
 3. Ensure your Jaeger collector is accessible and configured properly
+For local development, read the following
 
 ### Local Development Setup
 For local development, you can quickly spin up Jaeger using Docker:
@@ -183,7 +184,7 @@ dotnet pack src/SharedOpenTelemetry/SharedOpenTelemetry.csproj -c Release -o ./a
 
 The `.nupkg` will be placed in `artifacts/`. Publish it to your internal NuGet feed, then install it in each service with:
 ```bash
-dotnet add package SharedOpenTelemetry --version 1.0.0
+dotnet add package SharedOpenTelemetry --version X.X.X
 ```
 
 ## Dependencies
@@ -200,3 +201,41 @@ The package depends on the following OpenTelemetry libraries (version 1.20.0):
 - Logs are collected through the normal `Microsoft.Extensions.Logging` pipeline. Continue using `ILogger<T>` in services.
 - Avoid logging passwords, tokens, personal data, or other secrets.
 - The package is intentionally small. Add database, messaging, and domain-specific instrumentation only when the services need it.
+
+
+3. Build and Pack
+Build and create the NuGet package:
+dotnet clean
+dotnet build src/SharedOpenTelemetry/SharedOpenTelemetry.csproj -c Release
+dotnet pack src/SharedOpenTelemetry/SharedOpenTelemetry.csproj -c Release -o ./artifacts
+4. Push to GitHub Packages
+Push the package to GitHub Packages:
+dotnet nuget push ./artifacts/SharedOpenTelemetry.1.20.0.nupkg --source github --api-key YOUR_TOKEN
+Alternative: Using GitHub Actions (Recommended)
+For a more automated approach, you can set up a GitHub Actions workflow that automatically builds and pushes your package when you create a release.
+Create a file .github/workflows/publish.yml:
+name: Publish Package
+on:
+  release:
+    types: [created]
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+    - name: Restore dependencies
+      run: dotnet restore src/SharedOpenTelemetry/SharedOpenTelemetry.csproj
+    - name: Build
+      run: dotnet build src/SharedOpenTelemetry/SharedOpenTelemetry.csproj -c Release --no-restore
+    - name: Pack
+      run: dotnet pack src/SharedOpenTelemetry/SharedOpenTelemetry.csproj -c Release --no-build -o ./artifacts
+    - name: Publish
+      run: dotnet nuget push ./artifacts/*.nupkg --source https://nuget.pkg.github.com/YOUR_ORGANIZATION/index.json --api-key ${{ secrets.GITHUB_TOKEN }}
+Important Notes
+1. Repository Visibility: Make sure your repository is public or you have proper permissions if it's private
+2. Package Name: The package name is defined by <PackageId> in your .csproj file
+3. Versioning: Follow semantic versioning for your package versions
